@@ -4,10 +4,6 @@
 
 This documents the process for throwing together a server on a Windows 10 PC with a 3070TI
 
-## Git Bash
-
-Install the Git Bash utility from [Git SCM](https://git-scm.com/downloads)
-
 ## NoMachine
 
 Follow instructions from the [NoMachine website](https://www.nomachine.com/getting-started-with-nomachine) to enable remote desktop access from another computer
@@ -67,5 +63,3 @@ In `C:\OpenSSH-Win64`
 ```
 powershell -ExecutionPolicy Bypass -File uninstall-sshd.ps1
 ```
-
-## Conda environment
