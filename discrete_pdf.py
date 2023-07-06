@@ -17,10 +17,6 @@ import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-
-get_ipython().run_line_magic("matplotlib", "widget")
-
-
 df = pd.read_table("coinc_4200_5441.dat")
 df = df.rename(columns={df.columns[0]: "cumulative"})
 cdf = df["cumulative"].to_numpy()  # cumulative distribution function
