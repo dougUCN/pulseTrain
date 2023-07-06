@@ -38,11 +38,11 @@ conda activate pulseTrain
 Other useful conda commands
 
 ```
-conda create --name ENV_NAME # Create a new conda environment carrying over dependencies from base
-conda env export > environment.yml # Export active environment to a configuration file
 conda install PACKAGE_NAME # Install a package
 conda deactivate # Exit the environment
 conda env list # List all conda environments
+conda create --name ENV_NAME # Create a new conda environment carrying over dependencies from base
+conda env export > environment.yml # Export active environment to a configuration file
 conda remove --name ENV_NAME --all # deletes environment ENV_NAME and uninstalls associated packages
 ```
 
