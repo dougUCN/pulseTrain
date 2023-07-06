@@ -14,6 +14,8 @@ git clone https://github.com/dougUCN/pulseTrain.git
 
 Install the Git Bash utility for Windows from [Git SCM](https://git-scm.com/downloads)
 
+(Useful note on git-credential store methods for Windows [here](https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/credstores.md))
+
 ### Conda
 
 Install Conda following the instructions [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
