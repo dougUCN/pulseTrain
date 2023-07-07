@@ -13,7 +13,7 @@ See [README.md](README.md)
 As per Nvidia's [instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html), installation of the CUDA Toolkit with Conda simply requires
 
 ```
-install cuda -c nvidia
+conda install cuda -c nvidia
 ```
 
 Verify the install with `nvcc -V`. The output for my device is
