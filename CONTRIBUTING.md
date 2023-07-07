@@ -4,6 +4,48 @@
 
 This documents the process for throwing together a server on a Windows 10 PC with a 3070TI
 
+## Conda install
+
+See [README.md](README.md)
+
+## CUDA install
+
+As per Nvidia's [instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html), installation of the CUDA Toolkit with Conda simply requires
+
+```
+install cuda -c nvidia
+```
+
+Verify the install with `nvcc -V`. The output for my device is
+
+```
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Tue_Jun_13_19:42:34_Pacific_Daylight_Time_2023
+Cuda compilation tools, release 12.2, V12.2.91
+Build cuda_12.2.r12.2/compiler.32965470_0
+```
+
+Uninstall with `conda remove cuda`
+
+## PyTorch install
+
+Following instructions for [local installation](https://pytorch.org/get-started/locally/), run
+
+```
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+```
+
+At time of install pytorch was not available for Cuda 12, and running the conda install downgraded the cuda version automatically
+
+To verify the install, launch a python instance in conda
+
+```python
+import torch
+torch.rand(5, 3) # Should output a tensor
+torch.cuda.is_available() # Check if GPU driver and CUDA is enabled
+```
+
 ## NoMachine
 
 Follow instructions from the [NoMachine website](https://www.nomachine.com/getting-started-with-nomachine) to enable remote desktop access from another computer
