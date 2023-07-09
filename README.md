@@ -2,19 +2,29 @@
 
 ## Getting started
 
-Instructions are for a Windows 10 PC with a 3070TI, Git bash and Conda
-
-Clone this repository
-
-```
-git clone https://github.com/dougUCN/pulseTrain.git
-```
+Instructions are for a Windows 10 PC with a 3070ti, Git bash and Conda
 
 ### Git Bash
 
 Install the Git Bash utility for Windows from [Git SCM](https://git-scm.com/downloads)
 
 (Useful note on git-credential store methods for Windows [here](https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/credstores.md))
+
+### Git LFS
+
+The coincidences file (`coinc_4200_5441.dat`) is large and requires the use of the Git large file storage (LFS). A commit + push that involves this file counts against the 1 Gb/mo bandwidth in my account. Instructions for installing Git LFS are [here](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage).
+
+On Ubuntu, the apt-get package manager can install Git LFS. On Windows, the Git Bash install may bundle Git LFS for you. Installation of Git LFS may be verified by running the below command in the `pulseTrain` root directory
+
+```
+git lfs env
+```
+
+### Clone this repository
+
+```
+git clone https://github.com/dougUCN/pulseTrain.git
+```
 
 ### Conda
 
@@ -44,16 +54,6 @@ conda env list # List all conda environments
 conda create --name ENV_NAME # Create a new conda environment carrying over dependencies from base
 conda env export > environment.yml # Export active environment to a configuration file
 conda remove --name ENV_NAME --all # deletes environment ENV_NAME and uninstalls associated packages
-```
-
-### Git LFS
-
-The coincidences file (`coinc_4200_5441.dat`) is large and requires the use of the Git large file storage (LFS). A commit + push that involves this file counts against the 1 Gb/mo bandwidth in my account. Instructions for installing Git LFS are [here](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage).
-
-On Ubuntu, the apt-get package manager can install Git LFS. On Windows, the Git Bash install may bundle Git LFS for you. Installation of Git LFS may be verified by running the below command in the `pulseTrain` root directory
-
-```
-git lfs env
 ```
 
 ## Contributing
