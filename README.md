@@ -48,7 +48,11 @@ conda remove --name ENV_NAME --all # deletes environment ENV_NAME and uninstalls
 
 ## Git LFS
 
-The coincidences file (`coinc_4200_5441.dat`) is large and requires the use of the Git large file storage (LFS). GitHub allows only 1 Gb/mo of bandwidth, which includes cloning of the file.
+The coincidences file (`coinc_4200_5441.dat`) is large and requires the use of the Git large file storage (LFS). A commit + push that involves this file counts against the 1 Gb/mo bandwidth in my account. Instructions for installing Git LFS are [here](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-storage). On Ubuntu the apt-get package manager can install Git LFS. On Windows, the Git Bash install may bundle Git LFS for you. Installation of Git LFS may be verified by running the below command in the `pulseTrain` root directory
+
+```
+git lfs env
+```
 
 ## Contributing
 
