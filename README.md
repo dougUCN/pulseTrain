@@ -38,7 +38,7 @@ source /c/Users/$USERNAME/anaconda3/etc/profile.d/conda.sh
 
 with `$USERNAME` replaced appropriately, or the path modified if you chose a different installation directory for conda. Then, restart your Git Bash instance.
 
-## CUDA install
+### CUDA install
 
 As per Nvidia's [instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html), installation of the CUDA Toolkit with Conda simply requires
 
