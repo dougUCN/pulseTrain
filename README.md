@@ -58,7 +58,7 @@ Build cuda_12.2.r12.2/compiler.32965470_0
 
 Uninstall with `conda remove cuda`
 
-### Installing dependencies
+### Conda environment
 
 Create a conda environment from the provided `environment.yml` file
 
