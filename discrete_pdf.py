@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-# coding: utf-8
-
-# ## Generate pulsetrain signal from dat file
-#
-# Each event should have 30 - 40 photons
-#
-# First create probability distribution from histogram
+"""
+Generate pulsetrain signal from dat file
+Each event should have 30 - 40 photons
+First create probability distribution from histogram
+"""
 
 import scipy.stats as st
 import numpy as np
