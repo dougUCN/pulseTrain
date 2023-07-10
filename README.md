@@ -38,7 +38,29 @@ source /c/Users/$USERNAME/anaconda3/etc/profile.d/conda.sh
 
 with `$USERNAME` replaced appropriately, or the path modified if you chose a different installation directory for conda. Then, restart your Git Bash instance.
 
-Create a conda environment from the `environment.yml` file
+## CUDA install
+
+As per Nvidia's [instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html), installation of the CUDA Toolkit with Conda simply requires
+
+```
+conda install cuda -c nvidia
+```
+
+Verify the install with `nvcc -V`. The output for my device is
+
+```
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Tue_Jun_13_19:42:34_Pacific_Daylight_Time_2023
+Cuda compilation tools, release 12.2, V12.2.91
+Build cuda_12.2.r12.2/compiler.32965470_0
+```
+
+Uninstall with `conda remove cuda`
+
+### Installing dependencies
+
+Create a conda environment from the provided `environment.yml` file
 
 ```
 conda env create -f environment.yml
