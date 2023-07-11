@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 """
 Generate pulsetrain signal from dat file
-Each event should have 30 - 40 photons
-First create probability distribution from histogram
+Plots distribution of photons from UCN detection event
 """
 
 import scipy.stats as st
@@ -26,16 +25,18 @@ plt.plot(time[0:2000] * 1e6, pdf[0:2000], label="pdf")
 plt.ylim(bottom=0)
 plt.xlabel("time (micro-s)")
 plt.ylabel("normalized probability over 0.8 ns")
+plt.title("Probability distribution of photons from UCN event", fontsize=10)
 plt.legend()
-plt.savefig("prob_dist.pdf")
+plt.savefig("figures/prob_dist.pdf")
 plt.close()
 
 # Generate probability distribution from histogram
 custom_dist = st.rv_histogram((pdf[0:2000], time[0:2001]))
 
 # Sanity check
+fake_photons = 100000
 hist, bin_edges = np.histogram(
-    custom_dist.rvs(size=100000), range=[0, 1.6e-6], bins=1000
+    custom_dist.rvs(size=fake_photons), range=[0, 1.6e-6], bins=1000
 )
 centers = (bin_edges[1:] + bin_edges[:-1]) / 2
 
@@ -45,5 +46,6 @@ plt.ylim(bottom=0)
 plt.xlabel("time (micro-s)")
 plt.ylabel("events")
 plt.legend()
-plt.savefig("generated_dist.pdf")
+plt.title(f"Generated photons (n={fake_photons})", fontsize=10)
+plt.savefig("figures/generated_dist.pdf")
 plt.close()
