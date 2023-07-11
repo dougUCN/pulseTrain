@@ -28,7 +28,7 @@ torch.cuda.is_available() # Check if GPU driver and CUDA is enabled
 
 ## NoMachine
 
-Follow instructions from the [NoMachine website](https://www.nomachine.com/getting-started-with-nomachine) to enable remote desktop access from another computer
+Follow instructions from the [NoMachine website](https://www.nomachine.com/getting-started-with-nomachine) to enable remote desktop access from another computer. For access outside of an internal network, adjust your router settings such that port 4000 is forwarded to the appropriate computer
 
 ## SSH windows server
 
@@ -72,11 +72,13 @@ ssh -l my_username localhost # Powershell
 ssh my_username@IP_address
 ```
 
-1. Change the ssh terminal from Windows CMD to Git Bash, following the methodology outlined [here](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_server_configuration)
+6. Change the ssh terminal from Windows CMD to Git Bash, following the methodology outlined [here](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_server_configuration)
 
 ```
 New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Program Files\Git\bin\bash.exe" -PropertyType String -Force
 ```
+
+7. If ssh access is desired outside of an internal network, adjust router settings so that port 22 is forwarded to the appropriate computer
 
 ### Uninstalling sshd
 
@@ -85,3 +87,36 @@ In `C:\OpenSSH-Win64`
 ```
 powershell -ExecutionPolicy Bypass -File uninstall-sshd.ps1
 ```
+
+### Restart the server
+
+This is useful for reloading settings. In an admin powershell
+
+```
+Get-Service sshd | Restart-Service
+```
+
+<!-- ### Public key authentication
+
+Navigate to `C:\ProgramData\ssh\` in either admin powershell or cmd, and run `notepad sshd_config` to edit the configuration file. Make sure the following settings are uncommented and set appropriately in the config file
+
+```
+PubkeyAuthentication yes
+PasswordAuthentication no
+```
+
+From there, follow the instructions [here](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement), noting that this is an administrative account.
+
+Restart the server
+
+```
+Get-Service sshd | Restart-Service
+```
+
+Copy `id_ed25519.pub` to the ssh _client_ computer. An example of a valid ssh command with the public key (on bash) is
+
+```
+ssh -i /path/to/id_ed25519.pub username@IP_address
+```
+
+After everything is confirmed to function, delete `id_ed25519.pub` from the _server_ computer. -->
