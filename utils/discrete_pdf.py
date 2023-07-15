@@ -14,7 +14,7 @@ import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-df = pd.read_table("coinc_4200_5441.dat")
+df = pd.read_table("../in/coinc_4200_5441.dat")
 df = df.rename(columns={df.columns[0]: "cumulative"})
 cdf = df["cumulative"].to_numpy()  # cumulative distribution function
 pdf = cdf[1:] - cdf[:-1]  # probability distrubtion function arises from differential
@@ -27,7 +27,7 @@ plt.xlabel("time (micro-s)")
 plt.ylabel("normalized probability over 0.8 ns")
 plt.title("Probability distribution of photons from UCN event", fontsize=10)
 plt.legend()
-plt.savefig("figures/prob_dist.pdf")
+plt.savefig("../figures/prob_dist.pdf")
 plt.close()
 
 # Generate probability distribution from histogram
@@ -47,5 +47,5 @@ plt.xlabel("time (micro-s)")
 plt.ylabel("events")
 plt.legend()
 plt.title(f"Generated photons (n={fake_photons})", fontsize=10)
-plt.savefig("figures/generated_dist.pdf")
+plt.savefig("../figures/generated_dist.pdf")
 plt.close()
