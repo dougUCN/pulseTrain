@@ -76,11 +76,11 @@ def main():
 
     # Confirm overwrite if files exist
     for filename, num_events in DATASETS.items():
+        existing_files = []
         if (ROOT_DIR / "in" / (filename + ".npy")).is_file():
-            print(
-                f"WARNING: {str( ROOT_DIR / 'in' / (filename + '.npy') )}"
-                "will be overwritten!"
-            )
+            existing_files.append(str(ROOT_DIR / "in" / (filename + ".npy")))
+    if existing_files:
+        print(f"WARNING: {existing_files}" "will be overwritten!")
         if input("Continue? (y/n):").lower().startswith("n"):
             exit()
 
