@@ -59,7 +59,7 @@ def main():
         "--ucn",
         type=int,
         help="[min, max] number of allowed UCN events per dataset",
-        default=[0, 100],
+        default=[0, 50],
         nargs=2,
     )
     parser.add_argument(
