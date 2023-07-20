@@ -9,3 +9,6 @@ __pycache__/
 
 CY_example_code/
 
+# Generated monte carlo data
+in/*.npy
+in/*.csv

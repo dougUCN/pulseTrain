@@ -12,32 +12,38 @@ warnings.filterwarnings("ignore", category=UserWarning)
 import matplotlib.pyplot as plt
 import pandas as pd
 
+import sys
+
+from src.globals import get_project_root
+
+ROOT_DIR = get_project_root()
+
 pd.options.mode.chained_assignment = None  # default='warn'
 
-df = pd.read_table("../in/coinc_4200_5441.dat")
+df = pd.read_table(str(ROOT_DIR / "in" / "coinc_4200_5441.dat"))
 df = df.rename(columns={df.columns[0]: "cumulative"})
 cdf = df["cumulative"].to_numpy()  # cumulative distribution function
-pdf = cdf[1:] - cdf[:-1]  # probability distrubtion function arises from differential
+pdf = cdf[1:] - cdf[:-1]  # probability distribution function arises from differential
 time = np.arange(len(cdf) - 1) * 800e-12  # seconds
 
 plt.figure()
-plt.plot(time[0:2000] * 1e6, pdf[0:2000], label="pdf")
+plt.plot(time[0:3000] * 1e6, pdf[0:3000], label="pdf")
 plt.ylim(bottom=0)
 plt.xlabel("time (micro-s)")
 plt.ylabel("normalized probability over 0.8 ns")
 plt.title("Probability distribution of photons from UCN event", fontsize=10)
 plt.legend()
-plt.savefig("../figures/prob_dist.pdf")
+plt.savefig(str(ROOT_DIR / "figures" / "prob_dist.pdf"))
 plt.close()
 
 # Generate probability distribution from histogram
-custom_dist = st.rv_histogram((pdf[0:2000], time[0:2001]))
+custom_dist = st.rv_histogram((pdf[0:2400], time[0:2401]))
 
 # Sanity check
 fake_photons = 100000
 hist, bin_edges = np.histogram(
-    custom_dist.rvs(size=fake_photons), range=[0, 1.6e-6], bins=1000
-)
+    custom_dist.rvs(size=fake_photons), range=[0, 2e-6], bins=2000
+)  # Rebin to 1 ns bins
 centers = (bin_edges[1:] + bin_edges[:-1]) / 2
 
 plt.figure()
@@ -47,5 +53,5 @@ plt.xlabel("time (micro-s)")
 plt.ylabel("events")
 plt.legend()
 plt.title(f"Generated photons (n={fake_photons})", fontsize=10)
-plt.savefig("../figures/generated_dist.pdf")
+plt.savefig(str(ROOT_DIR / "figures" / "generated_dist.pdf"))
 plt.close()

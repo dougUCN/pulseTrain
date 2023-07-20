@@ -1,5 +1,7 @@
 # pulseTrain
 
+Pileup detection of UCNtau pulse train events
+
 ## Getting started
 
 Instructions are for a Windows 10 PC with a 3070ti, Git bash and Conda
@@ -77,6 +79,10 @@ conda create --name ENV_NAME # Create a new conda environment carrying over depe
 conda env export > environment.yml # Export active environment to a configuration file
 conda remove --name ENV_NAME --all # deletes environment ENV_NAME and uninstalls associated packages
 ```
+
+## Generate training, test, and validation data
+
+## Training the network
 
 ## Contributing
 
