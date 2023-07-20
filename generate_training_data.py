@@ -11,15 +11,17 @@ import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-from src.globals import get_project_root, write_memmset_to_file
+from src import globals, dataset
 
-ROOT_DIR = get_project_root()
+ROOT_DIR = globals.get_project_root()
 
 DATASETS = {  # Dataset name : number of events
     "training": 700,
     "validation": 200,
     "test": 100,
 }
+
+FILE_METADATA = "metadata.csv"
 
 
 def main():
@@ -79,8 +81,10 @@ def main():
         existing_files = []
         if (ROOT_DIR / "in" / (filename + ".npy")).is_file():
             existing_files.append(str(ROOT_DIR / "in" / (filename + ".npy")))
+        if (ROOT_DIR / "in" / (filename + ".csv")).is_file():
+            existing_files.append(str(ROOT_DIR / "in" / (filename + ".csv")))
     if existing_files:
-        print(f"WARNING: {existing_files}" "will be overwritten!")
+        print(f"WARNING -- EXISTING FILE(S): {existing_files}\nwill be overwritten!")
         if input("Continue? (y/n):").lower().startswith("n"):
             exit()
 
@@ -96,14 +100,23 @@ def main():
     # Each bin in default distribution is 0.8 ns
     pulse_train_dist = st.rv_histogram((pdf[0:2400], time[0:2401]))
     rng = np.random.default_rng()
+    outfile_name = []
+    dimensions = []
 
     for filename, num_events in DATASETS.items():
         data, labels = generate_data(args, num_events, pulse_train_dist, rng)
-        write_memmset_to_file(
-            outfile=str(ROOT_DIR / "in" / filename) + ".npy",
+        outfile_name.append(str((ROOT_DIR / "in" / filename).resolve()) + ".npy")
+        dimensions.append(data.shape)
+        dataset.write_memmset_to_file(
+            outfile=outfile_name[-1],
             data=data,
         )
         labels.to_csv(str(ROOT_DIR / "in" / filename) + ".csv")
+
+    # Save memmset metadata
+    metadata = pd.DataFrame(dimensions, columns=["sample_number", "sample_length"])
+    metadata["filename"] = outfile_name
+    metadata.to_csv(str(ROOT_DIR / "in" / FILE_METADATA))
 
     return
 

@@ -14,9 +14,10 @@ import pandas as pd
 
 import sys
 
-from src.globals import get_project_root
+# from src.globals import get_project_root
+from src import globals
 
-ROOT_DIR = get_project_root()
+ROOT_DIR = globals.get_project_root()
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
