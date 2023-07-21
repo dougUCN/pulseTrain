@@ -4,7 +4,7 @@ Contains r/w operations and classes related to dataset manipulation
 
 MemmapDataset from https://saturncloud.io/blog/efficient-way-of-using-numpy-memmap-when-training-neural-network-with-pytorch/
 """
-import torch
+import torch, sys
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -44,7 +44,7 @@ class pulse_train_dataset(torch.utils.data.Dataset):
             x - torch.tensor
             label - Labels of the dataset
         """
-        x = torch.from_numpy(self.data[idx, :].copy())  # avoid a pytorch warning
+        x = self.data[idx, :]  # avoid a pytorch warning
         label = self.labels.iloc[idx]["label"]
         return x, label
 
@@ -81,7 +81,7 @@ def read_memmap(infile, shape):
 
 
 def main():
-    """Test PyTorch dataloader and determine optimal number of workers"""
+    """Test PyTorch dataloader"""
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -104,27 +104,33 @@ def main():
     ):
         dataset[name] = pulse_train_dataset(data_file, args.filename)
 
-        # Sample first 3 in dataset
+        # Sample first 3 in dataset and print
         print(name)
         for i, sample in enumerate(dataset[name]):
-            print(f"{sample} {sample[0].size()}")
+            print(f"{sample} {sample[0].size}")
 
             if i == 2:
-                print("...")
+                print("...\n")
                 break
 
-    # Runtime batching test with the dataset with the most samples to see optimal worker count
-    # https://chtalhaanwar.medium.com/pytorch-num-workers-a-tip-for-speedy-training-ed127d825db7#:~:text=Num_workers%20tells%20the%20data%20loader,the%20GPU%20has%20to%20wait.
-    from time import time
-    import multiprocessing as mp
-
-    most_samples = metadata[
+    most_samples = metadata[  # get dataset name with most samples
         metadata["sample_number"] == metadata["sample_number"].max()
-    ]
-    # dataloader = DataLoader(dataset[row["name"]],shuffle=True,batch_size=10,pin_memory=True)
-    # for i_batch, sample_batched in enumerate(dataloader):
-    #     print(i_batch, sample_batched['x'].size(),
-    #         sample_batched['landmarks'].size())
+    ]["name"].tolist()[0]
+
+    # Following example from
+    # https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
+
+    # Parameters
+    params = {"batch_size": 64, "shuffle": True, "num_workers": 4, "pin_memory": True}
+    max_epochs = 1
+
+    print("testing DataLoader")
+    print(params)
+    dataset_generator = torch.utils.data.DataLoader(dataset[most_samples], **params)
+
+    for epoch in range(max_epochs):
+        for local_batch, local_labels in dataset_generator:
+            print(local_batch[0], local_labels[0])
 
     return
 

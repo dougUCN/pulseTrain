@@ -79,12 +79,12 @@ def main():
     # Confirm overwrite if files exist
     for filename, num_events in DATASETS.items():
         existing_files = []
-        if (ROOT_DIR / "in" / (filename + ".npy")).is_file():
+        if (ROOT_DIR / "in" / (filename + ".npy")).exists():
             existing_files.append(str(ROOT_DIR / "in" / (filename + ".npy")))
-        if (ROOT_DIR / "in" / (filename + ".csv")).is_file():
+        if (ROOT_DIR / "in" / (filename + ".csv")).exists():
             existing_files.append(str(ROOT_DIR / "in" / (filename + ".csv")))
     if existing_files:
-        print(f"WARNING -- EXISTING FILE(S): {existing_files}\nwill be overwritten!")
+        print(f"WARNING -- EXISTING FILE(S):\n{existing_files}\nwill be overwritten!")
         if input("Continue? (y/n):").lower().startswith("n"):
             exit()
 
@@ -101,21 +101,30 @@ def main():
     pulse_train_dist = st.rv_histogram((pdf[0:2400], time[0:2401]))
     rng = np.random.default_rng()
     outfile_name = []
+    label_file_name = []
     dimensions = []
+    dataset_name = []
 
     for filename, num_events in DATASETS.items():
         data, labels = generate_data(args, num_events, pulse_train_dist, rng)
         outfile_name.append(str((ROOT_DIR / "in" / filename).resolve()) + ".npy")
+        label_file_name.append(str((ROOT_DIR / "in" / filename).resolve()) + ".csv")
+        dataset_name.append(filename)
         dimensions.append(data.shape)
-        dataset.write_memmset_to_file(
+        dataset.write_memmap_to_file(
             outfile=outfile_name[-1],
             data=data,
         )
-        labels.to_csv(str(ROOT_DIR / "in" / filename) + ".csv")
+        print(f"{outfile_name[-1]} saved")
+
+        labels.to_csv(label_file_name[-1])
+        print(f"{label_file_name[-1]} saved")
 
     # Save memmset metadata
     metadata = pd.DataFrame(dimensions, columns=["sample_number", "sample_length"])
-    metadata["filename"] = outfile_name
+    metadata["name"] = dataset_name
+    metadata["data_file"] = outfile_name
+    metadata["label_file"] = label_file_name
     metadata.to_csv(str(ROOT_DIR / "in" / FILE_METADATA))
 
     return
