@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 """
 Contains r/w operations and classes related to dataset manipulation
-
-MemmapDataset from https://saturncloud.io/blog/efficient-way-of-using-numpy-memmap-when-training-neural-network-with-pytorch/
 """
 import torch, sys
 import numpy as np
@@ -11,6 +9,10 @@ from pathlib import Path
 
 
 class pulse_train_dataset(torch.utils.data.Dataset):
+    """
+    MemmapDataset from https://saturncloud.io/blog/efficient-way-of-using-numpy-memmap-when-training-neural-network-with-pytorch/
+    """
+
     def __init__(self, memmap_file, metadata_file):
         """
         Parameters:

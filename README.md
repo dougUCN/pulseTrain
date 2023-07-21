@@ -18,13 +18,13 @@ The coincidences file (`coinc_4200_5441.dat`) is large and requires the use of t
 
 On Ubuntu, the apt-get package manager can install Git LFS. On Windows, the Git Bash install may bundle Git LFS for you. Installation of Git LFS may be verified by running the below command in the `pulseTrain` root directory
 
-```
+```bash
 git lfs env
 ```
 
 ### Clone this repository
 
-```
+```bash
 git clone https://github.com/dougUCN/pulseTrain.git
 ```
 
@@ -34,7 +34,7 @@ Install Conda following the instructions [here](https://conda.io/projects/conda/
 
 To get Conda to run on Git Bash, to the `~/.bashrc` configuration file add the line
 
-```
+```bash
 source /c/Users/$USERNAME/anaconda3/etc/profile.d/conda.sh
 ```
 
@@ -44,7 +44,7 @@ with `$USERNAME` replaced appropriately, or the path modified if you chose a dif
 
 As per Nvidia's [instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html), installation of the CUDA Toolkit with Conda simply requires
 
-```
+```bash
 conda install cuda -c nvidia
 ```
 
@@ -64,14 +64,14 @@ Uninstall with `conda remove cuda`
 
 Create a conda environment from the provided `environment.yml` file
 
-```
+```bash
 conda env create -f environment.yml
 conda activate pulseTrain
 ```
 
 Other useful conda commands
 
-```
+```bash
 conda install PACKAGE_NAME # Install a package
 conda deactivate # Exit the environment
 conda env list # List all conda environments
@@ -81,6 +81,28 @@ conda remove --name ENV_NAME --all # deletes environment ENV_NAME and uninstalls
 ```
 
 ## Generate training, test, and validation data
+
+```
+$ python generate_training_data.py --help
+usage: generate_training_data.py [-h] [-l LENGTH] [-sb STARTBUFFER] [-eb ENDBUFFER] [-ucn UCN UCN] [-p PHOTONS PHOTONS]
+
+Generate training, validation, and test data sets via Monte Carlo
+
+options:
+  -h, --help            show this help message and exit
+  -l LENGTH, --length LENGTH
+                        Number of bins in the pileup window. [1 bin = 1 ns] (default: 2000)
+  -sb STARTBUFFER, --startBuffer STARTBUFFER
+                        Allows UCN events to occur before the pileup window by some number of bins [1 bin = 1 ns]
+                        (default: 50)
+  -eb ENDBUFFER, --endBuffer ENDBUFFER
+                        Does NOT allow UCN events to occur before the end of the pileup window by some number of bins [1   
+                        bin = 1 ns] (default: 25)
+  -ucn UCN UCN, --ucn UCN UCN
+                        [min, max] number of allowed UCN events per dataset (default: [0, 50])
+  -p PHOTONS PHOTONS, --photons PHOTONS PHOTONS
+                        [av, std_dev] Gaussian dist. of photons (integer) to generate per UCN event (default: [35, 2.5])
+```
 
 ## Training the network
 
