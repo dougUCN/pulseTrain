@@ -34,7 +34,7 @@ def main():
         "--length",
         type=int,
         help="Number of bins in the pileup window. [1 bin = 1 ns]",
-        default=2000,
+        default=2048,
     )
     parser.add_argument(
         "-sb",
@@ -98,7 +98,7 @@ def main():
 
     # Generate probability distribution from histogram
     # Each bin in default distribution is 0.8 ns
-    pulse_train_dist = st.rv_histogram((pdf[0:2400], time[0:2401]))
+    pulse_train_dist = st.rv_histogram((pdf[0:2450], time[0:2451]))
     rng = np.random.default_rng()
     outfile_name = []
     label_file_name = []
@@ -150,6 +150,7 @@ def generate_data(
     idx = []
     num_events = []
     data = np.zeros((num_samples, args.length))
+    pulse_train_length = 2500
 
     for i, d in enumerate(tqdm(data)):
         # Iterate through each set and randomize some number of UCN events
@@ -163,7 +164,9 @@ def generate_data(
             num_photons = int(rng.normal(loc=args.photons[0], scale=args.photons[1]))
             # Re-bin pulse train to 1 ns bins. Generate 1 UCN event
             hist, _ = np.histogram(
-                pulse_train_dist.rvs(size=num_photons), range=[0, 2e-6], bins=2000
+                pulse_train_dist.rvs(size=num_photons),
+                range=[0, 2.5e-6],
+                bins=pulse_train_length,
             )
 
             # Randomize start time of the pulse train
@@ -172,6 +175,8 @@ def generate_data(
                 high=args.length - args.endBuffer,
                 endpoint=True,
             )
+            if pulse_train_length < len(hist):
+                hist = np.pad(hist, (0, len(hist) - pulse_train_length))
             if start_time >= 0:
                 d += np.pad(hist, (start_time, 0))[: args.length]
             else:

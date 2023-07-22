@@ -51,7 +51,7 @@ class pulse_train_dataset(torch.utils.data.Dataset):
         return x, label
 
 
-def write_memmap_to_file(outfile, data, verbose=True):
+def write_memmap_to_file(outfile, data, verbose=False):
     """
     Parameters:
         outfile - name of output file
