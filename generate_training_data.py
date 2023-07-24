@@ -3,7 +3,7 @@
 Generate training, validation, and test data sets via Monte Carlo
 """
 
-import argparse, tqdm
+import argparse
 import scipy.stats as st
 import numpy as np
 from tqdm import tqdm
@@ -16,9 +16,9 @@ from src import globals, dataset
 ROOT_DIR = globals.get_project_root()
 
 DATASETS = {  # Dataset name : number of events
-    "training": 700,
-    "validation": 200,
-    "test": 100,
+    "training": 7000,
+    "validation": 2000,
+    "test": 1000,
 }
 
 FILE_METADATA = "metadata.csv"
@@ -125,6 +125,8 @@ def main():
     metadata["name"] = dataset_name
     metadata["data_file"] = outfile_name
     metadata["label_file"] = label_file_name
+    metadata["min_ucn"] = args.ucn[0]
+    metadata["max_ucn"] = args.ucn[1]
     metadata.to_csv(str(ROOT_DIR / "in" / FILE_METADATA))
 
     return

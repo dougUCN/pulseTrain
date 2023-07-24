@@ -6,13 +6,8 @@ Plots distribution of photons from UCN detection event
 
 import scipy.stats as st
 import numpy as np
-import warnings
-
-warnings.filterwarnings("ignore", category=UserWarning)
 import matplotlib.pyplot as plt
 import pandas as pd
-
-import sys
 
 # from src.globals import get_project_root
 from src import globals
@@ -34,7 +29,7 @@ plt.xlabel("time (micro-s)")
 plt.ylabel("normalized probability over 0.8 ns")
 plt.title("Probability distribution of photons from UCN event", fontsize=10)
 plt.legend()
-plt.savefig(str(ROOT_DIR / "figures" / "prob_dist.pdf"))
+plt.savefig(str(ROOT_DIR / "out" / "prob_dist.pdf"))
 plt.close()
 
 # Generate probability distribution from histogram
@@ -54,5 +49,5 @@ plt.xlabel("time (micro-s)")
 plt.ylabel("events")
 plt.legend()
 plt.title(f"Generated photons (n={fake_photons})", fontsize=10)
-plt.savefig(str(ROOT_DIR / "figures" / "generated_dist.pdf"))
+plt.savefig(str(ROOT_DIR / "out" / "generated_dist.pdf"))
 plt.close()
