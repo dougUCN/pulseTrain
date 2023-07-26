@@ -6,18 +6,42 @@ Train model
 import torch, argparse
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 from src.dataset import pulse_train_dataset
+from src.models import ResNet1D
+from src.utils import get_project_root
+
+from torchinfo import summary
+from sklearn.metrics import classification_report
+
+ROOT_DIR = get_project_root()
 
 # Parameters
 LOADER_PARAMS = {
     "batch_size": 64,
-    "shuffle": True,
     "num_workers": 4,
     "pin_memory": True,
 }
-MAX_EPOCHS = 25
+
+# (n_block, downsample_gap, increasefilter_gap) = (8, 1, 2)
+# 34 layer (16*2+2): 16, 2, 4
+# 98 layer (48*2+2): 48, 6, 12
+MODEL_PARAMS = {
+    "in_channels": 1,  # Dimension of the input
+    "base_filters": 64,  # number of filters in the first several Conv layer, will double every 4 layers
+    "kernel_size": 16,  # width of kernel
+    "stride": 2,  # stride of kernel moving
+    "groups": 32,
+    "n_block": 16,  # Number of residual blocks
+    "downsample_gap": 2,
+    "increasefilter_gap": 4,
+    "n_classes": 51,  # number of labels (classes)
+    "use_do": True,  # Enable dropout
+}
+MAX_EPOCHS = 2
 LEARNING_RATE = 0.01
+WEIGHT_DECAY = 0  # 1e-3 If non-zero, adds L2 penalty to loss function
 
 
 def main():
@@ -32,8 +56,14 @@ def main():
         default="in/metadata.csv",
         help="metadata filename",
     )
+    parser.add_argument(
+        "--showModelOnly",
+        action="store_true",
+        help="Exit immediately after displaying model params",
+    )
     args = parser.parse_args()
 
+    # TODO Move to utils file
     # Parse metadata file and set up data loading
     dataset = {}
     dataset_generator = {}
@@ -42,60 +72,127 @@ def main():
         metadata["name"].tolist(), metadata["data_file"].tolist()
     ):
         dataset[name] = pulse_train_dataset(data_file, args.filename)
+        if name in ["training", "train"]:  # Only shuffle training set
+            LOADER_PARAMS["shuffle"] = True
+        else:
+            LOADER_PARAMS["shuffle"] = False
         dataset_generator[name] = torch.utils.data.DataLoader(
             dataset[name], **LOADER_PARAMS
         )
+    # Get labels for validation set
+    validation_labels = pd.read_csv(
+        metadata.query("name == 'validation'")["label_file"].tolist()[0]
+    )["label"].to_numpy()
 
     # CUDA for PyTorch
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
     torch.backends.cudnn.benchmark = True
 
-    # Initialize model
+    # Initialize model and move to GPU
+    model = ResNet1D(**MODEL_PARAMS)
+    model.to(device)
+    model.verbose = False
 
     # Optimizer
+    optimizer = torch.optim.Adam(
+        model.parameters(),
+        lr=LEARNING_RATE,
+        weight_decay=WEIGHT_DECAY,
+    )
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode="min", factor=0.1, patience=10
+    )
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE)
+    # Loss function
+    loss_func = torch.nn.CrossEntropyLoss()
 
     # Print general info
     print(f"device: {device}")
     print(LOADER_PARAMS)
+    print(MODEL_PARAMS)
     print(f"learning rate: {LEARNING_RATE}")
-    print(f"Training set has {len(dataset_generator['training'])} instances")
-    print(f"Validation set has {len(dataset_generator['validation'])} instances")
+    print(f"Training set has {len(dataset_generator['training'].dataset)} instances")
+    print(
+        f"Validation set has {len(dataset_generator['validation'].dataset)} instances"
+    )
 
-    # TRAINING LOOP
-    for epoch in tqdm(range(MAX_EPOCHS)):
-        for local_batch, local_labels in dataset_generator["training"]:
-            # Transfer to GPU
-            local_batch, local_labels = local_batch.to(device), local_labels.to(device)
+    # TODO: Save output in cleaner way
+    summary(model, device=device)
 
-            # Zero gradients for every batch
+    if args.showModelOnly:
+        exit()
+
+    # Initialize params for tracking loss
+    epochs = []
+    running_losses = []
+    minibatch = []
+
+    # START EPOCH LOOP
+    for epoch in tqdm(range(MAX_EPOCHS), desc="epoch"):
+        running_loss = 0.0
+        # Train
+        model.train()
+        for local_i, (local_batch, local_labels) in enumerate(
+            tqdm(dataset_generator["training"], desc="Training")
+        ):
+            # Transfer data to GPU
+            input_x, input_y = local_batch.to(device), local_labels.to(device)
+
+            # zero parameter gradients
             optimizer.zero_grad()
 
-            # Forward pass.
-
-            # Calculate the loss and accuracy
-
-            # Backpropagation
-
-            # Update the weights.
+            # forward + backward + optimize
+            prediction = model(input_x)
+            loss = loss_func(prediction, input_y)
+            loss.backward()
             optimizer.step()
 
-        # Calculate loss and accuracy for the complete epoch.
+            # Log loss every 2000 mini-batches
+            running_loss += loss.item()
+            if local_i % 2000 == 1999:
+                epochs.append(epoch)
+                minibatch.append(local_i)
+                running_losses.append(running_loss)
+                running_loss = 0.0
+
+        scheduler.step()
 
         # Validation
-        with torch.set_grad_enabled(False):
-            for local_batch, local_labels in dataset_generator["validation"]:
-                # Transfer to GPU
-                local_batch, local_labels = local_batch.to(device), local_labels.to(
-                    device
-                )
+        model.eval()
+        epoch_prediction_prob = []
+        with torch.no_grad():
+            for local_batch, local_labels in tqdm(
+                dataset_generator["validation"],
+                desc="Validation",
+            ):
+                input_x, input_y = local_batch.to(device), local_labels.to(device)
+                prediction = model(input_x)
+                epoch_prediction_prob.append(
+                    prediction.cpu().data.numpy()
+                )  # Move tensor back to cpu
+        # TODO Move to separate function in utils file
+        # TODO save evaluations
+        epoch_prediction_prob = np.concatenate(epoch_prediction_prob)
+        epoch_prediction = np.argmax(epoch_prediction_prob, axis=1)  # Apply hardmax
+        tmp_report = classification_report(
+            y_true=validation_labels,
+            y_pred=epoch_prediction,
+        )  # output_dict=True)
+        # https://developers.google.com/machine-learning/crash-course/classification/precision-and-recall
+        print(tmp_report)
+    # END EPOCH LOOP
 
-                # Model computations
-                # [...]
-
-    # END TRAINING LOOP
+    # Print and save losses
+    loss_df = pd.DataFrame(
+        {
+            "epoch": epochs,
+            "minibatch": minibatch,
+            "running_loss": running_losses,
+        }
+    )
+    print(loss_df)
+    loss_df.to_csv(str(ROOT_DIR / "out" / "training_loss.csv"))
 
     # TODO Save model
 

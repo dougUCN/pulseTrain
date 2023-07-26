@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """
 Generate training, validation, and test data sets via Monte Carlo
+
+Outputs to `in` folder
 """
 
 import argparse
@@ -11,9 +13,9 @@ import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-from src import globals, dataset
+from src import utils, dataset
 
-ROOT_DIR = globals.get_project_root()
+ROOT_DIR = utils.get_project_root()
 
 DATASETS = {  # Dataset name : number of events
     "training": 7000,

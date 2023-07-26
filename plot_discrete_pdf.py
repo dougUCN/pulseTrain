@@ -9,10 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# from src.globals import get_project_root
-from src import globals
+from src import utils
 
-ROOT_DIR = globals.get_project_root()
+ROOT_DIR = utils.get_project_root()
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
