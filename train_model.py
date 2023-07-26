@@ -4,6 +4,7 @@ Train model
 """
 # TODO Update docstring and split into ResNet1D and MSResNet files
 # TODO Runtime logging
+# TODO Save progress upon Ctrl C
 
 import torch, argparse
 import matplotlib.pyplot as plt
@@ -48,7 +49,7 @@ MODEL_PARAMS = {
     "num_classes": 24,  # number of labels (classes)
 }
 
-MAX_EPOCHS = 100
+MAX_EPOCHS = 10
 LEARNING_RATE = 0.005  # MSResNet
 # LEARNING_RATE=1e-3 #  ResNet1D
 WEIGHT_DECAY = 0  # If non-zero, adds L2 penalty to loss function
@@ -179,7 +180,7 @@ def main():
         # TODO save evaluations
         epoch_prediction_prob = np.concatenate(epoch_prediction_prob)
         epoch_prediction = np.argmax(epoch_prediction_prob, axis=1)  # Apply hardmax
-        
+
         tmp_report = classification_report(
             y_true=validation_labels,
             y_pred=epoch_prediction,
