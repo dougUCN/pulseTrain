@@ -13,16 +13,15 @@ class pulse_train_dataset(torch.utils.data.Dataset):
     MemmapDataset from https://saturncloud.io/blog/efficient-way-of-using-numpy-memmap-when-training-neural-network-with-pytorch/
     """
 
-    def __init__(self, memmap_file, metadata_file):
+    def __init__(self, memmap_file, metadata_df, transform=None, target_transform=None):
         """
         Parameters:
-            memmap_file - numpy memmap
-            metadata_file - csv that contains memmap dimensions and points to label file
+            memmap_file - (str) numpy memmap filename
+
+            metadata_df - (pandas df) contains memmap dimensions and points to label file
         """
         data_absolute_path = str(Path(memmap_file).resolve())
-        metadata = pd.read_csv(str(Path(metadata_file).resolve())).query(
-            "data_file == @data_absolute_path"
-        )
+        metadata = metadata_df.query("data_file == @data_absolute_path")
         self.shape = (
             metadata["sample_number"].tolist()[0],
             metadata["sample_length"].tolist()[0],
@@ -33,6 +32,8 @@ class pulse_train_dataset(torch.utils.data.Dataset):
         self.data = np.memmap(
             data_absolute_path, dtype="int32", mode="r", shape=self.shape
         )
+        self.transform = transform
+        self.target_transform = target_transform
 
     def __len__(self):
         return len(self.data)
@@ -44,10 +45,15 @@ class pulse_train_dataset(torch.utils.data.Dataset):
 
         Returns:
             x - torch.tensor
+
             label - Labels of the dataset
         """
-        x = self.data[idx, :]  # avoid a pytorch warning
+        x = self.data[idx, :]
         label = self.labels.iloc[idx]["label"]
+        if self.transform:
+            x = self.transform(x)
+        if self.target_transform:
+            label = self.target_transform(label)
         return x, label
 
 
@@ -55,6 +61,7 @@ def write_memmap_to_file(outfile, data, verbose=False):
     """
     Parameters:
         outfile - name of output file
+
         data - 2D numpy array of ints
     """
     out = np.memmap(outfile, dtype="int32", mode="w+", shape=data.shape)

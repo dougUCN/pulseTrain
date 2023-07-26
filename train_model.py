@@ -8,10 +8,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-from src.dataset import pulse_train_dataset
-from src.models import ResNet1D
-from src.utils import get_project_root
-
+from src.models import MSResNet
+from src.utils import get_project_root, get_dataset_generator
 from torchinfo import summary
 from sklearn.metrics import classification_report
 
@@ -24,23 +22,30 @@ LOADER_PARAMS = {
     "pin_memory": True,
 }
 
-# (n_block, downsample_gap, increasefilter_gap) = (8, 1, 2)
-# 34 layer (16*2+2): 16, 2, 4
-# 98 layer (48*2+2): 48, 6, 12
+# # (n_block, downsample_gap, increasefilter_gap) = (8, 1, 2)
+# # 34 layer (16*2+2): 16, 2, 4
+# # 98 layer (48*2+2): 48, 6, 12
+# MODEL_PARAMS = {
+#     "in_channels": 1,  # Dimension of the input
+#     "base_filters": 64,  # number of filters in the first several Conv layer, will double every 4 layers
+#     "kernel_size": 16,  # width of kernel
+#     "stride": 2,  # stride of kernel moving
+#     "groups": 32,
+#     "n_block": 16,  # Number of residual blocks
+#     "downsample_gap": 2,
+#     "increasefilter_gap": 4,
+#     "n_classes": 51,  # number of labels (classes)
+#     "use_do": True,  # Enable dropout
+# }
+
 MODEL_PARAMS = {
-    "in_channels": 1,  # Dimension of the input
-    "base_filters": 64,  # number of filters in the first several Conv layer, will double every 4 layers
-    "kernel_size": 16,  # width of kernel
-    "stride": 2,  # stride of kernel moving
-    "groups": 32,
-    "n_block": 16,  # Number of residual blocks
-    "downsample_gap": 2,
-    "increasefilter_gap": 4,
-    "n_classes": 51,  # number of labels (classes)
-    "use_do": True,  # Enable dropout
+    "input_channel": 1,
+    "layers": [1, 1, 1, 1],
+    "num_classes": 51,
 }
+
 MAX_EPOCHS = 2
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.005
 WEIGHT_DECAY = 0  # 1e-3 If non-zero, adds L2 penalty to loss function
 
 
@@ -63,22 +68,10 @@ def main():
     )
     args = parser.parse_args()
 
-    # TODO Move to utils file
     # Parse metadata file and set up data loading
-    dataset = {}
-    dataset_generator = {}
     metadata = pd.read_csv(args.filename)
-    for name, data_file in zip(
-        metadata["name"].tolist(), metadata["data_file"].tolist()
-    ):
-        dataset[name] = pulse_train_dataset(data_file, args.filename)
-        if name in ["training", "train"]:  # Only shuffle training set
-            LOADER_PARAMS["shuffle"] = True
-        else:
-            LOADER_PARAMS["shuffle"] = False
-        dataset_generator[name] = torch.utils.data.DataLoader(
-            dataset[name], **LOADER_PARAMS
-        )
+    dataset_generator = get_dataset_generator(metadata, LOADER_PARAMS)
+
     # Get labels for validation set
     validation_labels = pd.read_csv(
         metadata.query("name == 'validation'")["label_file"].tolist()[0]
@@ -90,7 +83,9 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     # Initialize model and move to GPU
-    model = ResNet1D(**MODEL_PARAMS)
+    # model = ResNet1D(**MODEL_PARAMS)
+    model = MSResNet(**MODEL_PARAMS)
+
     model.to(device)
     model.verbose = False
 
@@ -100,8 +95,11 @@ def main():
         lr=LEARNING_RATE,
         weight_decay=WEIGHT_DECAY,
     )
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="min", factor=0.1, patience=10
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    #     optimizer, mode="min", factor=0.1, patience=10
+    # )
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(
+        optimizer, milestones=[50, 100, 150, 200, 250, 300], gamma=0.1
     )
 
     # Loss function
