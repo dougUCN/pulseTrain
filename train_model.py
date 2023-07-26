@@ -179,11 +179,12 @@ def main():
         # TODO save evaluations
         epoch_prediction_prob = np.concatenate(epoch_prediction_prob)
         epoch_prediction = np.argmax(epoch_prediction_prob, axis=1)  # Apply hardmax
-        print(tmp_report)
+        
         tmp_report = classification_report(
             y_true=validation_labels,
             y_pred=epoch_prediction,
         )
+        print(tmp_report)
         # https://developers.google.com/machine-learning/crash-course/classification/precision-and-recall
 
     # END EPOCH LOOP
