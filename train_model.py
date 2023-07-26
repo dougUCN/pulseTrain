@@ -22,6 +22,7 @@ LOADER_PARAMS = {
     "pin_memory": True,
 }
 
+# # ResNet1D
 # # (n_block, downsample_gap, increasefilter_gap) = (8, 1, 2)
 # # 34 layer (16*2+2): 16, 2, 4
 # # 98 layer (48*2+2): 48, 6, 12
@@ -38,6 +39,7 @@ LOADER_PARAMS = {
 #     "use_do": True,  # Enable dropout
 # }
 
+# MSResNet
 MODEL_PARAMS = {
     "input_channel": 1,
     "layers": [1, 1, 1, 1],
@@ -95,10 +97,10 @@ def main():
         lr=LEARNING_RATE,
         weight_decay=WEIGHT_DECAY,
     )
-    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau( # ResNet1D
     #     optimizer, mode="min", factor=0.1, patience=10
     # )
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(  # MSResNet
         optimizer, milestones=[50, 100, 150, 200, 250, 300], gamma=0.1
     )
 
