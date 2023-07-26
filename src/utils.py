@@ -1,4 +1,4 @@
-import torch
+import torch, torchvision
 import pandas as pd
 from pathlib import Path
 from .dataset import pulse_train_dataset

@@ -2,6 +2,8 @@
 """
 Train model
 """
+# TODO Update docstring and split into ResNet1D and MSResNet files
+# TODO Runtime logging
 
 import torch, argparse
 import matplotlib.pyplot as plt
@@ -31,11 +33,11 @@ LOADER_PARAMS = {
 #     "base_filters": 64,  # number of filters in the first several Conv layer, will double every 4 layers
 #     "kernel_size": 16,  # width of kernel
 #     "stride": 2,  # stride of kernel moving
-#     "groups": 32,
+#     "groups": 32, # See https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html
 #     "n_block": 16,  # Number of residual blocks
 #     "downsample_gap": 2,
 #     "increasefilter_gap": 4,
-#     "n_classes": 51,  # number of labels (classes)
+#     "n_classes": 50,  # number of labels (classes)
 #     "use_do": True,  # Enable dropout
 # }
 
@@ -43,12 +45,14 @@ LOADER_PARAMS = {
 MODEL_PARAMS = {
     "input_channel": 1,
     "layers": [1, 1, 1, 1],
-    "num_classes": 51,
+    "num_classes": 24,  # number of labels (classes)
 }
 
-MAX_EPOCHS = 2
-LEARNING_RATE = 0.005
-WEIGHT_DECAY = 0  # 1e-3 If non-zero, adds L2 penalty to loss function
+MAX_EPOCHS = 10
+LEARNING_RATE = 0.005  # MSResNet
+# LEARNING_RATE=1e-3 #  ResNet1D
+WEIGHT_DECAY = 0  # If non-zero, adds L2 penalty to loss function
+# WEIGHT_DECAY = 1e-3 # ResNet1D
 
 
 def main():
@@ -117,7 +121,7 @@ def main():
         f"Validation set has {len(dataset_generator['validation'].dataset)} instances"
     )
 
-    # TODO: Save output in cleaner way
+    # TODO: Save model output to file
     summary(model, device=device)
 
     if args.showModelOnly:
@@ -148,9 +152,9 @@ def main():
             loss.backward()
             optimizer.step()
 
-            # Log loss every 2000 mini-batches
+            # Log loss every 20 mini-batches
             running_loss += loss.item()
-            if local_i % 2000 == 1999:
+            if local_i % 20 == 19:
                 epochs.append(epoch)
                 minibatch.append(local_i)
                 running_losses.append(running_loss)
@@ -171,7 +175,7 @@ def main():
                 epoch_prediction_prob.append(
                     prediction.cpu().data.numpy()
                 )  # Move tensor back to cpu
-        # TODO Move to separate function in utils file
+
         # TODO save evaluations
         epoch_prediction_prob = np.concatenate(epoch_prediction_prob)
         epoch_prediction = np.argmax(epoch_prediction_prob, axis=1)  # Apply hardmax

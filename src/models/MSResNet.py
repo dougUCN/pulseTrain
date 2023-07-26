@@ -4,12 +4,16 @@ import torch.nn as nn
 
 class MSResNet(nn.Module):
     """
-    Multi Scale 1D ResNet
+    Multi Scale 1D ResNet by Fei Wang
 
     https://github.com/geekfeiw/Multi-Scale-1D-ResNet/tree/master
 
-    A super light-weighted classification network for time serial data with 1D convolutional operation,
-    where 1D kernels sweep along with the time axis. The multi scale setting is inspired by Inception.
+    @article{wang2018csi,
+    title={CSI-Net: Unified Body Characterization and Action Recognition},
+    author={Wang, Fei and Han, Jinsong and Zhang, Shiyuan and He, Xu and Huang, Dong},
+    journal={arXiv preprint arXiv:1810.03064},
+    year={2018}
+    }
     """
 
     def __init__(self, input_channel, layers=[1, 1, 1, 1], num_classes=10):
@@ -145,7 +149,7 @@ class MSResNet(nn.Module):
         # out = self.drop(out)
         out1 = self.fc(out)
 
-        return out1, out
+        return out1  # , out
 
 
 def conv3x3(in_planes, out_planes, stride=1):

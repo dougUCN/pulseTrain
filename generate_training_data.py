@@ -36,7 +36,7 @@ def main():
         "--length",
         type=int,
         help="Number of bins in the pileup window. [1 bin = 1 ns]",
-        default=2048,
+        default=512,
     )
     parser.add_argument(
         "-sb",
@@ -46,7 +46,7 @@ def main():
             "Allows UCN events to occur before the "
             "pileup window by some number of bins [1 bin = 1 ns]"
         ),
-        default=50,
+        default=10,
     )
     parser.add_argument(
         "-eb",
@@ -56,14 +56,14 @@ def main():
             "Does NOT allow UCN events to occur before the end "
             "of the pileup window by some number of bins [1 bin = 1 ns]"
         ),
-        default=25,
+        default=10,
     )
     parser.add_argument(
         "-ucn",
         "--ucn",
         type=int,
         help="[min, max] number of allowed UCN events per dataset",
-        default=[0, 50],
+        default=[0, 23],
         nargs=2,
     )
     parser.add_argument(
@@ -109,6 +109,8 @@ def main():
 
     for filename, num_events in DATASETS.items():
         data, labels = generate_data(args, num_events, pulse_train_dist, rng)
+        # Add extra axis to data
+        data = data[:, np.newaxis, :]
         outfile_name.append(str((ROOT_DIR / "in" / filename).resolve()) + ".npy")
         label_file_name.append(str((ROOT_DIR / "in" / filename).resolve()) + ".csv")
         dataset_name.append(filename)
@@ -123,7 +125,9 @@ def main():
         print(f"{label_file_name[-1]} saved")
 
     # Save memmset metadata
-    metadata = pd.DataFrame(dimensions, columns=["sample_number", "sample_length"])
+    metadata = pd.DataFrame(
+        dimensions, columns=["sample_number", "n_channels", "sample_length"]
+    )
     metadata["name"] = dataset_name
     metadata["data_file"] = outfile_name
     metadata["label_file"] = label_file_name

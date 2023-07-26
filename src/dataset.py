@@ -2,10 +2,12 @@
 """
 Contains r/w operations and classes related to dataset manipulation
 """
-import torch, sys
+import torch
 import numpy as np
 import pandas as pd
 from pathlib import Path
+
+DATA_FORMAT = "float32"
 
 
 class pulse_train_dataset(torch.utils.data.Dataset):
@@ -24,13 +26,14 @@ class pulse_train_dataset(torch.utils.data.Dataset):
         metadata = metadata_df.query("data_file == @data_absolute_path")
         self.shape = (
             metadata["sample_number"].tolist()[0],
+            metadata["n_channels"].tolist()[0],
             metadata["sample_length"].tolist()[0],
         )
         self.labels = pd.read_csv(
             str(Path(metadata["label_file"].tolist()[0]).resolve())
         )
         self.data = np.memmap(
-            data_absolute_path, dtype="int32", mode="r", shape=self.shape
+            data_absolute_path, dtype=DATA_FORMAT, mode="r", shape=self.shape
         )
         self.transform = transform
         self.target_transform = target_transform
@@ -44,7 +47,7 @@ class pulse_train_dataset(torch.utils.data.Dataset):
             idx - integer ID of the data set
 
         Returns:
-            x - torch.tensor
+            x - np.array
 
             label - Labels of the dataset
         """
@@ -62,9 +65,9 @@ def write_memmap_to_file(outfile, data, verbose=False):
     Parameters:
         outfile - name of output file
 
-        data - 2D numpy array of ints
+        data - numpy array of ints
     """
-    out = np.memmap(outfile, dtype="int32", mode="w+", shape=data.shape)
+    out = np.memmap(outfile, dtype=DATA_FORMAT, mode="w+", shape=data.shape)
     if verbose:
         print(data)
     out[:] = data[:]
@@ -75,7 +78,8 @@ def read_memmap(infile, shape):
     """
     Parameters:
         infile - name of memmap file
-        shape - tuple (x, y)
+
+        shape - tuple
 
     Returns:
         np.memmap
