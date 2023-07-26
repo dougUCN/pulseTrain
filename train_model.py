@@ -152,9 +152,9 @@ def main():
             loss.backward()
             optimizer.step()
 
-            # Log loss every 20 mini-batches
+            # Log loss after some mini-batches
             running_loss += loss.item()
-            if local_i % 20 == 19:
+            if local_i % 100 == 99:
                 epochs.append(epoch)
                 minibatch.append(local_i)
                 running_losses.append(running_loss)
@@ -179,12 +179,13 @@ def main():
         # TODO save evaluations
         epoch_prediction_prob = np.concatenate(epoch_prediction_prob)
         epoch_prediction = np.argmax(epoch_prediction_prob, axis=1)  # Apply hardmax
+        print(tmp_report)
         tmp_report = classification_report(
             y_true=validation_labels,
             y_pred=epoch_prediction,
-        )  # output_dict=True)
+        )
         # https://developers.google.com/machine-learning/crash-course/classification/precision-and-recall
-        print(tmp_report)
+
     # END EPOCH LOOP
 
     # Print and save losses
@@ -197,6 +198,15 @@ def main():
     )
     print(loss_df)
     loss_df.to_csv(str(ROOT_DIR / "out" / "training_loss.csv"))
+
+    final_report = classification_report(
+        y_true=validation_labels,
+        y_pred=epoch_prediction,
+        output_dict=True,
+    )
+    pd.DataFrame(final_report).transpose().to_csv(
+        str(ROOT_DIR / "out" / "classification_report.csv")
+    )
 
     # TODO Save model
 
