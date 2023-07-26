@@ -48,7 +48,7 @@ MODEL_PARAMS = {
     "num_classes": 24,  # number of labels (classes)
 }
 
-MAX_EPOCHS = 10
+MAX_EPOCHS = 100
 LEARNING_RATE = 0.005  # MSResNet
 # LEARNING_RATE=1e-3 #  ResNet1D
 WEIGHT_DECAY = 0  # If non-zero, adds L2 penalty to loss function

@@ -18,8 +18,8 @@ from src import utils, dataset
 ROOT_DIR = utils.get_project_root()
 
 DATASETS = {  # Dataset name : number of events
-    "training": 7000,
-    "validation": 2000,
+    "training": 100_000,
+    "validation": 10_000,
     "test": 1000,
 }
 
