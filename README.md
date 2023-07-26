@@ -1,6 +1,6 @@
 # pulseTrain
 
-Pileup detection of UCNtau pulse train events
+Pileup detection of UCNtau pulse train events. The photon probability distribution of a single UCN detection event can be visualized with `plot_discrete_pdf.py`
 
 ## Getting started
 
@@ -105,6 +105,19 @@ options:
 ```
 
 ## Training the network
+
+```
+$ python train_model.py --help
+usage: train_model.py [-h] [-f FILENAME] [--showModelOnly]
+
+Train model
+
+options:
+  -h, --help            show this help message and exit
+  -f FILENAME, --filename FILENAME
+                        metadata filename (default: in/metadata.csv)
+  --showModelOnly       Exit immediately after displaying model params (default: False)
+```
 
 ## Contributing
 
