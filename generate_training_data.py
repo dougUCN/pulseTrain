@@ -18,9 +18,9 @@ from src import utils, dataset
 ROOT_DIR = utils.get_project_root()
 
 DATASETS = {  # Dataset name : number of events
-    "training": 100_000,
-    "validation": 10_000,
-    "test": 1000,
+    "training": 1_000_000,
+    "validation": 100_000,
+    "test": 10_000,
 }
 
 FILE_METADATA = "metadata.csv"
@@ -39,16 +39,6 @@ def main():
         default=512,
     )
     parser.add_argument(
-        "-sb",
-        "--startBuffer",
-        type=int,
-        help=(
-            "Allows UCN events to occur before the "
-            "pileup window by some number of bins [1 bin = 1 ns]"
-        ),
-        default=10,
-    )
-    parser.add_argument(
         "-eb",
         "--endBuffer",
         type=int,
@@ -56,14 +46,14 @@ def main():
             "Does NOT allow UCN events to occur before the end "
             "of the pileup window by some number of bins [1 bin = 1 ns]"
         ),
-        default=10,
+        default=0,
     )
     parser.add_argument(
         "-ucn",
         "--ucn",
         type=int,
         help="[min, max] number of allowed UCN events per dataset",
-        default=[0, 23],
+        default=[0, 5],
         nargs=2,
     )
     parser.add_argument(
@@ -179,7 +169,7 @@ def generate_data(
 
             # Randomize start time of the pulse train
             start_time = rng.integers(
-                low=-args.startBuffer,
+                low=0,
                 high=args.length - args.endBuffer,
                 endpoint=True,
             )

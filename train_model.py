@@ -46,7 +46,7 @@ LOADER_PARAMS = {
 MODEL_PARAMS = {
     "input_channel": 1,
     "layers": [1, 1, 1, 1],
-    "num_classes": 24,  # number of labels (classes)
+    "num_classes": 6,  # number of labels (classes)
 }
 
 MAX_EPOCHS = 10
