@@ -1,5 +1,6 @@
 # pulseTrain
 
+**Contents**
 - [pulseTrain](#pulsetrain)
   - [Background](#background)
 - [Getting started](#getting-started)
@@ -12,9 +13,8 @@
 - [Scripts](#scripts)
   - [Generate training, test, and validation data](#generate-training-test-and-validation-data)
   - [Training the network](#training-the-network)
-- [Model Architecture(s)](#model-architectures)
+- [Candidate Model Architecture(s)](#candidate-model-architectures)
   - [Input data types](#input-data-types)
-  - [Model outputs](#model-outputs)
 - [Contributing](#contributing)
 
 
@@ -151,11 +151,11 @@ options:
   --showModelOnly       Exit immediately after displaying model params (default: False)
 ```
 
-# Model Architecture(s)
+# Candidate Model Architecture(s)
 
-This section will be updated with candidate models as they are implemented and evaluated
+This section will be updated with models as they are implemented and evaluated
 
-**Multi Scale 1D ResNet by Fei Wang**
+**Multi Scale 1D ResNet by Fei Wang et al.**
 
 ![MSResNet](https://github.com/geekfeiw/Multi-Scale-1D-ResNet/blob/master/figs/network.png)
 
@@ -170,9 +170,23 @@ year={2018}
 }
 ```
 
+**1D ResNet by Shenda Hong et al.**
+
+https://github.com/hsd1503/resnet1d.git
+
+```
+@inproceedings{hong2020holmes,
+title={HOLMES: Health OnLine Model Ensemble Serving for Deep Learning Models in Intensive Care Units},
+author={Hong, Shenda and Xu, Yanbo and Khare, Alind and Priambada, Satria and Maher, Kevin and Aljiffry, Alaa and Sun, Jimeng and Tumanov, Alexey},
+booktitle={Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining},
+pages={1614--1624},
+year={2020}
+}
+```
+
 ## Input data types
 
-## Model outputs
+Training, validation, and test data is stored as a [numpy memmap](https://numpy.org/doc/stable/reference/generated/numpy.memmap.html) to avoid loading the entire dataset into memory, and is implemented with `torch.utils.data.Dataset`. One label (number of neutron events) is associated with a 1D input tensor representing a binned timeseries of photon events (1 ns bins). Labels are stored in a corresponding csv file.
 
 # Contributing
 

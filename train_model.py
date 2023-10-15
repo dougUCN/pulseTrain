@@ -2,9 +2,7 @@
 """
 Train model
 """
-# TODO Update docstring and split into ResNet1D and MSResNet files
 # TODO Runtime logging
-# TODO Save progress upon Ctrl C
 
 import torch, argparse
 import matplotlib.pyplot as plt

@@ -12,7 +12,7 @@ DATA_FORMAT = "float32"
 
 class pulse_train_dataset(torch.utils.data.Dataset):
     """
-    MemmapDataset from https://saturncloud.io/blog/efficient-way-of-using-numpy-memmap-when-training-neural-network-with-pytorch/
+    MemmapDataset
     """
 
     def __init__(self, memmap_file, metadata_df, transform=None, target_transform=None):
