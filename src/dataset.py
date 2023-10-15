@@ -57,7 +57,7 @@ class pulse_train_dataset(torch.utils.data.Dataset):
             x = self.transform(x)
         if self.target_transform:
             label = self.target_transform(label)
-        return x, label
+        return torch.tensor(x), label
 
 
 def write_memmap_to_file(outfile, data, verbose=False):
