@@ -55,6 +55,8 @@ LEARNING_RATE = 0.005  # MSResNet
 WEIGHT_DECAY = 0  # If non-zero, adds L2 penalty to loss function
 # WEIGHT_DECAY = 1e-3 # ResNet1D
 
+LOG_RATE = 1000  # Logs approximately after this many minibatches
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -155,7 +157,7 @@ def main():
 
             # Log loss after some mini-batches
             running_loss += loss.item()
-            if local_i % 100 == 99:
+            if local_i % LOG_RATE == LOG_RATE - 1:
                 epochs.append(epoch)
                 minibatch.append(local_i)
                 running_losses.append(running_loss)

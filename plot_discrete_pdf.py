@@ -8,11 +8,12 @@ import scipy.stats as st
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 from src import utils
 
 ROOT_DIR = utils.get_project_root()
-
+sns.set_style("darkgrid")
 pd.options.mode.chained_assignment = None  # default='warn'
 
 df = pd.read_table(str(ROOT_DIR / "in" / "coinc_4200_5441.dat"))
@@ -26,9 +27,32 @@ plt.plot(time[0:3000] * 1e6, pdf[0:3000], label="pdf")
 plt.ylim(bottom=0)
 plt.xlabel("time (micro-s)")
 plt.ylabel("normalized probability over 0.8 ns")
-plt.title("Probability distribution of photons from UCN event", fontsize=10)
+plt.title("Fig. 1: Probability distribution of photons from UCN event", fontsize=10)
 plt.legend()
-plt.savefig(str(ROOT_DIR / "out" / "prob_dist.pdf"))
+plt.savefig(str(ROOT_DIR / "out" / "prob_dist.png"))
+plt.close()
+
+
+# Plot an example pileup event for README
+example_pdf_sum = np.copy(pdf[0:3000])
+example_pdf_sum[500:3000] += pdf[0:2500]
+plt.figure()
+plt.plot(time[0:3000] * 1e6, pdf[0:3000], label="1st event PDF")
+plt.plot(time[500:3001] * 1e6, np.insert(pdf[0:2500], 0, 0.0002), label="2nd event PDF")
+plt.plot(
+    time[0:3000] * 1e6,
+    example_pdf_sum,
+    label="total PDF",
+    color="black",
+    alpha=0.5,
+    linewidth=2,
+)
+plt.ylim(bottom=0)
+plt.xlabel("time (micro-s)")
+plt.ylabel("Probability density [arb.]")
+plt.title("Fig. 2: Example UCN pileup probability distribution", fontsize=10)
+plt.legend()
+plt.savefig(str(ROOT_DIR / "out" / "pileup_dist.png"))
 plt.close()
 
 # Generate probability distribution from histogram
@@ -48,5 +72,5 @@ plt.xlabel("time (micro-s)")
 plt.ylabel("events")
 plt.legend()
 plt.title(f"Generated photons (n={fake_photons})", fontsize=10)
-plt.savefig(str(ROOT_DIR / "out" / "generated_dist.pdf"))
+plt.savefig(str(ROOT_DIR / "out" / "generated_dist.png"))
 plt.close()

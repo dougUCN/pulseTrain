@@ -1,5 +1,15 @@
 # Contributing
 
+- [Contributing](#contributing)
+- [Server setup](#server-setup)
+  - [Git Bash, CUDA, and Conda install](#git-bash-cuda-and-conda-install)
+  - [PyTorch install](#pytorch-install)
+  - [NoMachine](#nomachine)
+  - [SSH windows server](#ssh-windows-server)
+    - [Uninstalling sshd](#uninstalling-sshd)
+    - [Restart the server](#restart-the-server)
+
+
 # Server setup
 
 This documents the process for throwing together a server on a Windows 10 PC with a 3070TI
