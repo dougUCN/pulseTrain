@@ -17,13 +17,8 @@ from sklearn.metrics import classification_report
 ROOT_DIR = get_project_root()
 
 # Parameters
-# Note issues as per
-# https://discuss.pytorch.org/t/oserror-errno-22-invalid-argument-pickle-unpicklingerror-pickle-data-was-truncated/138469
-# https://stackoverflow.com/questions/70141850/why-im-getting-the-message-userwarning-the-given-numpy-array-is-not-writeable
 LOADER_PARAMS = {
     "batch_size": 64,
-    # "num_workers": 4,
-    # "pin_memory": True, 
 }
 
 # # ResNet1D
@@ -50,7 +45,7 @@ MODEL_PARAMS = {
     "num_classes": 6,  # number of labels (classes)
 }
 
-MAX_EPOCHS = 10
+MAX_EPOCHS = 1
 LEARNING_RATE = 0.005  # MSResNet
 # LEARNING_RATE=1e-3 #  ResNet1D
 WEIGHT_DECAY = 0  # If non-zero, adds L2 penalty to loss function
