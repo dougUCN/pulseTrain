@@ -3,6 +3,8 @@
 **Contents**
 - [pulseTrain](#pulsetrain)
   - [Background](#background)
+- [Candidate Model Architecture(s)](#candidate-model-architectures)
+  - [Input data types](#input-data-types)
 - [Getting started](#getting-started)
   - [Git Bash](#git-bash)
   - [Git LFS](#git-lfs)
@@ -13,8 +15,6 @@
 - [Scripts](#scripts)
   - [Generate training, test, and validation data](#generate-training-test-and-validation-data)
   - [Training the network](#training-the-network)
-- [Candidate Model Architecture(s)](#candidate-model-architectures)
-  - [Input data types](#input-data-types)
 - [Contributing](#contributing)
 
 
@@ -31,6 +31,43 @@ A single neutron event is not difficult to count. A naive method would be to bin
 ![fig2](out/pileup_dist.png)
 
 The sparsity of photon counts per neutron event in combination with the long PDF decay "tails" means that it may be easy to miscontstrue multiple events as only one. Miscounts are extremely detrimental to the accuracy of UCNτ, as the aggregation of a handful of miscounts per run easily skew experimental accuracy over the course of a multi-year measurement cycle. Pileup events are further complicated with the influence of background photon counts. For instance, the neutron absorption material glows for a very long time after being activated, and over the course of a neutron counting period the background photon count steadily increases. Other background events are coupled to temperature, ambient light leaks, cosmic rays, or radioactive decays from the experimental area.
+
+# Candidate Model Architecture(s)
+
+This section will be updated with models as they are implemented and evaluated
+
+**Multi Scale 1D ResNet by Fei Wang et al.**
+
+![MSResNet](https://github.com/geekfeiw/Multi-Scale-1D-ResNet/blob/master/figs/network.png)
+
+https://github.com/geekfeiw/Multi-Scale-1D-ResNet/tree/master
+
+```
+@article{wang2018csi,
+title={CSI-Net: Unified Body Characterization and Action Recognition},
+author={Wang, Fei and Han, Jinsong and Zhang, Shiyuan and He, Xu and Huang, Dong},
+journal={arXiv preprint arXiv:1810.03064},
+year={2018}
+}
+```
+
+**1D ResNet by Shenda Hong et al.**
+
+https://github.com/hsd1503/resnet1d.git
+
+```
+@inproceedings{hong2020holmes,
+title={HOLMES: Health OnLine Model Ensemble Serving for Deep Learning Models in Intensive Care Units},
+author={Hong, Shenda and Xu, Yanbo and Khare, Alind and Priambada, Satria and Maher, Kevin and Aljiffry, Alaa and Sun, Jimeng and Tumanov, Alexey},
+booktitle={Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining},
+pages={1614--1624},
+year={2020}
+}
+```
+
+## Input data types
+
+Training, validation, and test data is stored as a [numpy memmap](https://numpy.org/doc/stable/reference/generated/numpy.memmap.html) to avoid loading the entire dataset into memory, and is implemented with `torch.utils.data.Dataset`. One label (number of neutron events) is associated with a 1D input tensor representing a binned timeseries of photon events (1 ns bins). Labels are stored in a corresponding csv file.
 
 # Getting started
 
@@ -150,43 +187,6 @@ options:
                         metadata filename (default: in/metadata.csv)
   --showModelOnly       Exit immediately after displaying model params (default: False)
 ```
-
-# Candidate Model Architecture(s)
-
-This section will be updated with models as they are implemented and evaluated
-
-**Multi Scale 1D ResNet by Fei Wang et al.**
-
-![MSResNet](https://github.com/geekfeiw/Multi-Scale-1D-ResNet/blob/master/figs/network.png)
-
-https://github.com/geekfeiw/Multi-Scale-1D-ResNet/tree/master
-
-```
-@article{wang2018csi,
-title={CSI-Net: Unified Body Characterization and Action Recognition},
-author={Wang, Fei and Han, Jinsong and Zhang, Shiyuan and He, Xu and Huang, Dong},
-journal={arXiv preprint arXiv:1810.03064},
-year={2018}
-}
-```
-
-**1D ResNet by Shenda Hong et al.**
-
-https://github.com/hsd1503/resnet1d.git
-
-```
-@inproceedings{hong2020holmes,
-title={HOLMES: Health OnLine Model Ensemble Serving for Deep Learning Models in Intensive Care Units},
-author={Hong, Shenda and Xu, Yanbo and Khare, Alind and Priambada, Satria and Maher, Kevin and Aljiffry, Alaa and Sun, Jimeng and Tumanov, Alexey},
-booktitle={Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining},
-pages={1614--1624},
-year={2020}
-}
-```
-
-## Input data types
-
-Training, validation, and test data is stored as a [numpy memmap](https://numpy.org/doc/stable/reference/generated/numpy.memmap.html) to avoid loading the entire dataset into memory, and is implemented with `torch.utils.data.Dataset`. One label (number of neutron events) is associated with a 1D input tensor representing a binned timeseries of photon events (1 ns bins). Labels are stored in a corresponding csv file.
 
 # Contributing
 
