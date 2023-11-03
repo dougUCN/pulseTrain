@@ -12,3 +12,7 @@ CY_example_code/
 # Generated monte carlo data
 in/*.npy
 in/*.csv
+
+# Model output
+*.pkl
+*.pickle

@@ -208,7 +208,7 @@ def main():
         str(ROOT_DIR / "out" / "classification_report.csv")
     )
 
-    # TODO Save model
+    torch.save(model.state_dict(), "model.pkl")
 
     return
 
